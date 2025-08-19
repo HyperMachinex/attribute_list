@@ -98,47 +98,6 @@
 
   <main class="container">
 
-    <!-- Şirket Bilgileri -->
-    <section class="card">
-      <h2 style="margin:0 0 12px">Şirket Bilgileri</h2>
-      <div class="grid cols-3">
-        <div>
-          <label>Şirket / Marka Adı</label>
-          <input id="company" type="text" placeholder="Örn: Hyper Machine" />
-        </div>
-        <div>
-          <label>Web Sitesi</label>
-          <input id="website" type="url" placeholder="https://..." />
-        </div>
-        <div>
-          <label>Sektör</label>
-          <select id="industry">
-            <option value="">Seçiniz</option>
-            <option>Perakende / E-Ticaret</option>
-            <option>Finans / Bankacılık</option>
-            <option>Enerji / Elektrik</option>
-            <option>Telekom</option>
-            <option>Sağlık</option>
-            <option>Diğer</option>
-          </select>
-        </div>
-      </div>
-      <div class="grid cols-3" style="margin-top:10px">
-        <div>
-          <label>Temsilci Sayısı</label>
-          <input id="agentCount" type="number" min="1" step="1" placeholder="Örn: 10" />
-        </div>
-        <div>
-          <label>İletişim E-postası</label>
-          <input id="email" type="text" placeholder="destek@..." />
-        </div>
-        <div>
-          <label>Notlar</label>
-          <input id="notes" type="text" placeholder="Özel ihtiyaçlar..." />
-        </div>
-      </div>
-    </section>
-
     <!-- Özellik Başlıkları (fieldset) -->
     <form id="featureForm">
       <details class="card" open>
@@ -240,26 +199,20 @@
       ],
       pencere: [
         "Canlı Destek",
-        "Canlı destek penceresinde özelleştirilmiş sesler",
         "Sohbet öncesi butonlar",
         "Dosya gönderme-alma",
-        "Sohbet penceresinde temsilci fotoğrafı gösterme",
         "Sınırsız sitede sınırsız sohbet penceresi",
         "Mobil cihazların tamamına uygun sohbet penceresi",
-        "Mobil sohbet penceresi özelleştirme",
         "Gönderim sonrası yanıt düzenleme"
       ],
       agent: [
         "Yazım denetimi",
         "Taslak cevaplar",
-        "Ziyaretçinin yazdığının anlık gösterimi",
         "Çoklu temsilcili sohbetler",
         "Temsilciler arası sohebt aktarımı",
         "Temsilci Durum Bilgisi",
         "Farklı kanallara farklı temsilciler atama",
-        "Sohbet konuları",
-        "Kısayollar",
-        "Tüm cihazlarda çalışma"
+        "Kısayollar"
       ],
       ziyaret: [
         "Canlı ziyaretçi takibi ve sitedeki ziyaretçiye manuel mesaj gönderme",
@@ -286,9 +239,7 @@
         "Sohbet yönlendirme",
         "Sohbet kurtarma",
         "Kanalları ayarlarıyla kopyalama",
-        "Departmanlar",
-        "Temsilci istatistikleri",
-        "Temsilci sayısı"
+        "Temsilci istatistikleri"
       ],
       crm: [
         "CRM Modülü ile müşteri ve satış takibi",
@@ -303,7 +254,6 @@
       ],
       security: [
         "Spam koruması",
-        "Kişisel Veri İşleme İzni (KVKK, GDPR vb.)",
         "Sohbet arşivi"
       ]
     };
