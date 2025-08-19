@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Canlı Destek Özellik Seçici</title>
+  <style>
+    :root{
+      --bg: #0f172a;         /* slate-900 */
+      --card: #111827;       /* gray-900 */
+      --muted: #94a3b8;      /* slate-400 */
+      --text: #e5e7eb;       /* gray-200 */
+      --primary: #22d3ee;    /* cyan-400 */
+      --accent: #34d399;     /* emerald-400 */
+      --danger: #f87171;     /* red-400 */
+      --ring: rgba(34, 211, 238, .5);
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 10% -10%, rgba(34,211,238,.08), transparent 60%),
+                  radial-gradient(1000px 600px at 110% 10%, rgba(52,211,153,.05), transparent 60%), var(--bg);
+      color:var(--text);
+    }
+    header{
+      position: sticky; top:0; z-index:10; backdrop-filter: blur(8px);
+      background: linear-gradient(180deg, rgba(15,23,42,.9), rgba(15,23,42,.65));
+      border-bottom: 1px solid rgba(148,163,184,.15);
+    }
+    .container{max-width:1100px; margin:0 auto; padding:18px 16px}
+    .title{display:flex; gap:14px; align-items:center}
+    .logo{width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg, var(--primary), var(--accent)); box-shadow: var(--shadow)}
+    h1{font-size: clamp(20px, 2.8vw, 28px); margin:0; letter-spacing:.2px}
+    .muted{color:var(--muted); font-size:14px}
+
+    .toolbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:14px}
+    .toolbar > *{border-radius: 12px; border:1px solid rgba(148,163,184,.18); background: var(--card); color:var(--text); box-shadow: var(--shadow)}
+    .search{flex:1 1 260px; display:flex; align-items:center; gap:10px; padding:10px 12px}
+    .search input{width:100%; padding:8px 10px; background:transparent; border:0; outline: none; color:var(--text)}
+    .chip{padding:10px 14px; cursor:pointer; transition:.15s transform}
+    .chip:hover{transform: translateY(-1px)}
+    .chip[disabled]{opacity:.5; cursor:not-allowed}
+    .stat{padding:10px 14px}
+
+    .grid{display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap:14px; margin-top:16px}
+    .card{background: linear-gradient(180deg, rgba(17,24,39,.9), rgba(17,24,39,.85)); border:1px solid rgba(148,163,184,.18); padding:14px; border-radius: var(--radius); box-shadow: var(--shadow); display:flex; gap:12px; align-items:flex-start}
+    .card input[type="checkbox"]{width:20px; height:20px; accent-color: var(--primary); margin-top:3px}
+    .card label{line-height:1.3}
+    .card small{display:block; color:var(--muted); margin-top:6px}
+
+    .panel{margin-top:22px; display:grid; grid-template-columns: 1.5fr .9fr; gap:16px}
+    @media (max-width: 860px){ .panel{grid-template-columns: 1fr} }
+
+    .summary, .export{
+      background: linear-gradient(180deg, rgba(17,24,39,.9), rgba(17,24,39,.86));
+      border:1px solid rgba(148,163,184,.18); border-radius: var(--radius); box-shadow: var(--shadow); padding:16px
+    }
+    .summary h3, .export h3{margin:0 0 10px}
+    .summary ul{margin:8px 0 0; padding-left:18px}
+    .summary .empty{color:var(--muted)}
+
+    .btn{display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:12px; border:1px solid rgba(148,163,184,.18); background:var(--card); color:var(--text); cursor:pointer; box-shadow: var(--shadow); transition:.15s transform}
+    .btn:hover{transform: translateY(-1px)}
+    .btn.primary{border-color: transparent; background: linear-gradient(135deg, var(--primary), var(--accent)); color:#0b1220; font-weight:600}
+    .btn.danger{border-color: rgba(248,113,113,.25)}
+    .btn:disabled{opacity:.6; cursor:not-allowed}
+
+    .footer{opacity:.7; font-size:12px; text-align:center; margin:24px 0 40px}
+    .pill{display:inline-block; padding:3px 8px; border-radius:999px; background:rgba(34,211,238,.12); border:1px solid rgba(34,211,238,.25); font-size:12px; color:var(--text)}
+    .notice{color:var(--muted); font-size:12px}
+    .count{font-weight:600}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="title">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Canlı Destek Özellik Seçici</h1>
+          <div class="muted">İhtiyacın olan özellikleri işaretle, paylaş, dışa aktar.</div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search" role="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="10" r="6" stroke="currentColor" stroke-width="2"/></svg>
+          <input id="q" type="search" placeholder="Özellik ara... (örn: WhatsApp, CRM, API)" autocomplete="off" />
+        </div>
+        <button class="chip" id="selectAll">Hepsini Seç</button>
+        <button class="chip" id="clearAll">Seçimi Temizle</button>
+        <div class="stat">
+          <span class="pill"><span id="selCount" class="count">0</span>/<span id="totalCount">0</span> seçili</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="list" class="grid" aria-live="polite"></section>
+
+    <section class="panel">
+      <div class="summary">
+        <h3>Seçilen Özellikler</h3>
+        <div id="selectedEmpty" class="empty">Henüz seçim yapılmadı.</div>
+        <ul id="selectedList"></ul>
+      </div>
+      <div class="export">
+        <h3>Paylaş & Dışa Aktar</h3>
+        <div style="display:grid; gap:10px; grid-template-columns: 1fr 1fr;">
+          <button id="copyBtn" class="btn">Kopyala (madde listesi)</button>
+          <button id="shareBtn" class="btn">Paylaşılabilir Bağlantı</button>
+          <button id="jsonBtn" class="btn">JSON indir</button>
+          <button id="csvBtn" class="btn">CSV indir</button>
+        </div>
+        <p class="notice" style="margin-top:10px">Seçimler tarayıcında <strong>otomatik kaydedilir</strong>. Paylaşılabilir bağlantı, seçimlerini URL'e ekler.</p>
+      </div>
+    </section>
+
+    <p class="footer">Hazırlayan: <strong>Hyper Machine</strong> • <span class="muted">Bu sayfa tamamen istemci tarafında çalışır.</span></p>
+  </main>
+
+  <script>
+    const FEATURES = [
+      "Canlı Destek",
+      "Facebook, Instagram, Viber, Telegram Entegrasyonları",
+      "Whatsapp Entegrasyonu (Ek olarak ücretlendirilmektedir)",
+      "Görüntülü Görüşme Modülü",
+      "Mobil Uygulama SDK",
+      "Telefon+ Modülü",
+      "Facebook, Instagram ve Telegram'da Sesli Mesajlar",
+      "Online mağazanızdaki formlar üzerinden sipariş işleme",
+      "Geri Aramalar",
+      "Apple Business Chat",
+      "Canlı destek penceresinde özelleştirilmiş sesler",
+      "Akıllı tetikleyicilerle hedefli sohbetler başlatma",
+      "Sohbet öncesi butonlar",
+      "Dosya gönderme-alma",
+      "Canlı ziyaretçi takibi ve sitedeki ziyaretçiye manuel mesaj gönderme",
+      "IP adresi, coğrafi bölge ve ziyaret kaynağı dahil tüm ziyaretçi bilgileri",
+      "Sitenizde ziyaretçilerinizi yönlendirmek için işaretçi aracı",
+      "Sohbet öncesi ya da esnasında iletişim bilgileri toplama",
+      "Çevrimdışı iletişim formu",
+      "Sohbet penceresinde temsilci fotoğrafı gösterme",
+      "Sınırsız sitede sınırsız sohbet penceresi",
+      "Mobil cihazların tamamına uygun sohbet penceresi",
+      "Mobil sohbet penceresi özelleştirme",
+      "Pazarlama Modülü",
+      "AI Asistanı Modülü",
+      "YZ YardımcısıModülü",
+      "Etkileşimli mesaj kampanyaları",
+      "Google Analytics Entegrasyonu",
+      "Pazarlama İstatistikleri",
+      "CRM Modülü ile müşteri ve satış takibi",
+      "Excel'e veri dökümü alma",
+      "Müşteriler tarafından servis kalitesi geribildirimleri",
+      "Temsilci istatistikleri",
+      "Ekip içi sohbet",
+      "Sohbet yönlendirme",
+      "Sohbet kurtarma",
+      "Chatbot - Sohbet Botları",
+      "Sohbetleri ziyaretçinin coğrafi konumuna göre dağıtma",
+      "Kanalları ayarlarıyla kopyalama",
+      "Departmanlar",
+      "Temsilci Durum Bilgisi",
+      "Farklı kanallara farklı temsilciler atama",
+      "Sohbet konuları",
+      "Yazım denetimi",
+      "Taslak cevaplar",
+      "Ziyaretçinin yazdığının anlık gösterimi",
+      "Çoklu temsilcili sohbetler",
+      "Mesai saatleri belirleme",
+      "Gönderim sonrası yanıt düzenleme",
+      "Temsilciler arası sohebt aktarımı",
+      "Kısayollar",
+      "Tüm cihazlarda çalışma",
+      "Temsilci sayısı",
+      "Sohbet API",
+      "Site Webhookları",
+      "Yazılımınızla entegrasyon için JavaScript API ve WebHooklar",
+      "CRM sağlayıcılarla tek tıkla entegrasyon",
+      "Çalışanların erişim hakları ve rollerini düzenleme",
+      "Spam koruması",
+      "Kişisel Veri İşleme İzni (KVKK, GDPR vb.)",
+      "Sohbet arşivi"
+    ];
+
+    // Utilities
+    const $ = (sel, el=document) => el.querySelector(sel);
+    const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+    const slug = str => str.toLowerCase().replace(/[^a-z0-9çğıöşü\s-]/g, '').replace(/\s+/g,'-');
+
+    const STORAGE_KEY = 'canli_destek_feature_selections_v1';
+    const params = new URLSearchParams(location.search);
+
+    const state = {
+      query: '',
+      selected: new Set(),
+    };
+
+    // Load from URL (share) or localStorage
+    function hydrate(){
+      const fromUrl = params.get('select');
+      if(fromUrl){
+        try{ JSON.parse(decodeURIComponent(fromUrl)).forEach(s => state.selected.add(s)); }
+        catch(e){ /* ignore malformed */ }
+      } else {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if(saved){
+          try{ JSON.parse(saved).forEach(s => state.selected.add(s)); }catch(e){}
+        }
+      }
+    }
+
+    function persist(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...state.selected]));
+    }
+
+    function renderList(){
+      const container = $('#list');
+      container.innerHTML = '';
+      const q = state.query.trim().toLowerCase();
+      const filtered = FEATURES.filter(f => f.toLowerCase().includes(q));
+      $('#totalCount').textContent = FEATURES.length;
+
+      for(const f of filtered){
+        const id = slug(f);
+        const card = document.createElement('div');
+        card.className = 'card';
+        const box = document.createElement('input');
+        box.type = 'checkbox';
+        box.id = id;
+        box.checked = state.selected.has(f);
+        box.addEventListener('change', () => toggleFeature(f));
+
+        const label = document.createElement('label');
+        label.setAttribute('for', id);
+        label.innerHTML = `<strong>${f}</strong>`;
+
+        card.appendChild(box);
+        card.appendChild(label);
+        container.appendChild(card);
+      }
+
+      // Update selection count and summary
+      updateSummary();
+      $('#selectAll').disabled = filtered.length === 0;
+      $('#clearAll').disabled = state.selected.size === 0;
+    }
+
+    function updateSummary(){
+      $('#selCount').textContent = state.selected.size;
+      const list = $('#selectedList');
+      list.innerHTML = '';
+      if(!state.selected.size){
+        $('#selectedEmpty').style.display = 'block';
+        return;
+      }
+      $('#selectedEmpty').style.display = 'none';
+      [...state.selected].forEach(f => {
+        const li = document.createElement('li');
+        li.textContent = f;
+        list.appendChild(li);
+      });
+    }
+
+    function toggleFeature(f){
+      if(state.selected.has(f)) state.selected.delete(f); else state.selected.add(f);
+      persist();
+      renderList();
+    }
+
+    function selectAllFiltered(){
+      const q = state.query.trim().toLowerCase();
+      FEATURES.filter(f => f.toLowerCase().includes(q)).forEach(f => state.selected.add(f));
+      persist(); renderList();
+    }
+
+    function clearAll(){ state.selected.clear(); persist(); renderList(); }
+
+    function copyList(){
+      const text = [...state.selected].map(f => `• ${f}`).join('\n');
+      if(!text){ alert('Kopyalanacak seçim yok.'); return; }
+      navigator.clipboard.writeText(text).then(() => {
+        toast('Seçilen özellikler panoya kopyalandı.');
+      });
+    }
+
+    function download(filename, content){
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([content], {type: 'text/plain'}));
+      a.download = filename; a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 500);
+    }
+
+    function exportJSON(){
+      const payload = { exportedAt: new Date().toISOString(), selected: [...state.selected] };
+      if(!payload.selected.length){ alert('Dışa aktarılacak seçim yok.'); return; }
+      download('ozellikler.json', JSON.stringify(payload, null, 2));
+    }
+
+    function exportCSV(){
+      const rows = ['Özellik'];
+      [...state.selected].forEach(f => rows.push(`"${f.replace(/"/g,'\"')}"`));
+      if(rows.length === 1){ alert('Dışa aktarılacak seçim yok.'); return; }
+      download('ozellikler.csv', rows.join("\n"));
+    }
+
+    function shareLink(){
+      if(!state.selected.size){ alert('Paylaşılabilir bağlantı için en az bir seçim yap.'); return; }
+      const u = new URL(location.href);
+      u.searchParams.set('select', encodeURIComponent(JSON.stringify([...state.selected])));
+      navigator.clipboard.writeText(u.toString()).then(()=> toast('Bağlantı panoya kopyalandı.'));
+      history.replaceState({}, '', u); // URL'i güncelle
+    }
+
+    function toast(msg){
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.style.position='fixed'; t.style.bottom='20px'; t.style.left='50%'; t.style.transform='translateX(-50%)';
+      t.style.background='linear-gradient(135deg, var(--primary), var(--accent))'; t.style.color='#0b1220';
+      t.style.padding='10px 14px'; t.style.borderRadius='12px'; t.style.boxShadow= 'var(--shadow)'; t.style.zIndex=1000; t.style.fontWeight='600';
+      document.body.appendChild(t);
+      setTimeout(()=> t.remove(), 1500);
+    }
+
+    // Event bindings
+    $('#q').addEventListener('input', (e)=> { state.query = e.target.value; renderList(); });
+    $('#selectAll').addEventListener('click', selectAllFiltered);
+    $('#clearAll').addEventListener('click', clearAll);
+    $('#copyBtn').addEventListener('click', copyList);
+    $('#jsonBtn').addEventListener('click', exportJSON);
+    $('#csvBtn').addEventListener('click', exportCSV);
+    $('#shareBtn').addEventListener('click', shareLink);
+
+    // Init
+    hydrate();
+    renderList();
+  </script>
+</body>
+</html>
