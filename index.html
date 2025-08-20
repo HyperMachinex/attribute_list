@@ -36,6 +36,7 @@
 
     form{margin-top:16px; display:grid; gap:16px}
     .card{background: linear-gradient(180deg, rgba(17,24,39,.9), rgba(17,24,39,.85)); border:1px solid rgba(148,163,184,.18); padding:16px; border-radius: var(--radius); box-shadow: var(--shadow)}
+    .card summary{margin-bottom:16px; display:block}
     .grid{display:grid; gap:12px}
     .grid.cols-2{grid-template-columns:1fr 1fr}
     .grid.cols-3{grid-template-columns:repeat(3,1fr)}
@@ -100,6 +101,51 @@
 
     <!-- Özellik Başlıkları (fieldset) -->
     <form id="featureForm">
+      <div class="card">
+        <label style="margin-bottom:12px; display:block">Aylık Mesaj Sayısı:</label>
+        <div class="grid cols-3" id="monthlyMessages">
+          <label class="option">
+            <input type="radio" name="monthlyMessages" value="0-1000">
+            <span>0-1,000</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="monthlyMessages" value="1000-10000">
+            <span>1,000-10,000</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="monthlyMessages" value="10k-100k">
+            <span>10,000-100,000</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="monthlyMessages" value="100k-1m">
+            <span>100,000-1,000,000</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="monthlyMessages" value="1m+">
+            <span>1,000,000+</span>
+          </label>
+        </div>
+      </div>
+      
+      <div class="card">
+        <label style="margin-bottom:12px; display:block">Temsilci Sayısı:</label>
+        <div class="grid cols-3" id="temsilciCount">
+          <label class="option">
+            <input type="radio" name="temsilciCount" value="up-to-2">
+            <span>2'ye kadar</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="temsilciCount" value="up-to-100">
+            <span>100'e kadar</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="temsilciCount" value="limitless">
+            <span>Sınırsız</span>
+          </label>
+        </div>
+      </div>
+
+      
       <details class="card" open>
         <summary><strong>Kanallar & Entegrasyonlar</strong> <span class="muted-row">(Facebook, Instagram, WhatsApp, Apple Business Chat...)</span></summary>
         <fieldset style="margin-top:10px">
@@ -158,6 +204,10 @@
         <summary><strong>Güvenlik & Uyum</strong></summary>
         <div class="grid cols-2" id="grp-security"></div>
       </details>
+            
+             <div class="card" style="text-align:center">
+         <button type="button" class="btn primary" id="devamEt" style="padding:16px 24px; font-size:18px; font-weight:600;">Devam Et</button>
+       </div>
 
       <div class="card" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between">
         <div class="muted">Arama: <span class="pill" id="filterStat">tüm özellikler</span></div>
@@ -239,7 +289,8 @@
         "Sohbet yönlendirme",
         "Sohbet kurtarma",
         "Kanalları ayarlarıyla kopyalama",
-        "Temsilci istatistikleri"
+        "Temsilci istatistikleri",
+        "Çalışanların erişim hakları ve rollerini düzenleme"
       ],
       crm: [
         "CRM Modülü ile müşteri ve satış takibi",
@@ -268,7 +319,7 @@
     const state = {
       query: '',
       selected: new Set(),
-      fields: {company:'', website:'', industry:'', agentCount:'', email:'', notes:''}
+      fields: {company:'', website:'', industry:'', agentCount:'', email:'', notes:'', monthlyMessages:'', temsilciCount:''}
     };
 
     function hydrate(){
@@ -292,6 +343,217 @@
         if(state.fields[id]) el.value = state.fields[id];
         el.addEventListener('input', (e)=>{ state.fields[id] = e.target.value; persist(); });
       });
+    }
+
+    function bindMonthlyMessages(){
+      const radios = document.querySelectorAll('#monthlyMessages input[type="radio"]');
+      radios.forEach(radio => {
+        if(state.fields.monthlyMessages === radio.value) radio.checked = true;
+        radio.addEventListener('change', (e) => {
+          if(e.target.checked) {
+            state.fields.monthlyMessages = e.target.value;
+            persist();
+          }
+        });
+      });
+    }
+
+    function bindTemsilciCount(){
+      const radios = document.querySelectorAll('#temsilciCount input[type="radio"]');
+      radios.forEach(radio => {
+        if(state.fields.temsilciCount === radio.value) radio.checked = true;
+        radio.addEventListener('change', (e) => {
+          if(e.target.checked) {
+            state.fields.temsilciCount = e.target.value;
+            persist();
+          }
+        });
+      });
+    }
+
+    function getPackageSuggestion() {
+      const monthlyMessages = state.fields.monthlyMessages;
+      const temsilciCount = state.fields.temsilciCount;
+      
+      let packageSuggestion = '';
+      let packageDescription = '';
+      let packageReason = '';
+      
+      // Check for enterprise-specific features first (highest priority)
+      const enterpriseFeatures = [
+        "Mobil Uygulama SDK",
+        "Sohbet yönlendirme", 
+        "Sohbet API"
+      ];
+      
+      const hasEnterpriseFeature = enterpriseFeatures.some(feature => state.selected.has(feature));
+      
+      if (hasEnterpriseFeature) {
+        const selectedEnterpriseFeatures = enterpriseFeatures.filter(feature => state.selected.has(feature));
+        packageSuggestion = 'Kurumsal Paket';
+        packageDescription = 'Kurumsal özellikler seçildiği için Kurumsal Paket gerekli';
+        packageReason = `Kurumsal özellikler seçildiği için Kurumsal Paket önerilir: ${selectedEnterpriseFeatures.join(', ')}`;
+        return { packageSuggestion, packageDescription, packageReason };
+      }
+      
+      // Check for premium/enterprise features (second priority)
+      const premiumFeatures = [
+        "Whatsapp Entegrasyonu (Ek olarak ücretlendirilmektedir)",
+        "Facebook, Instagram ve Telegram'da Sesli Mesajlar",
+        "Apple Business Chat",
+        "Etkileşimli mesaj kampanyaları",
+        "Google Analytics Entegrasyonu",
+        "Pazarlama İstatistikleri",
+        "Sohbetleri ziyaretçinin coğrafi konumuna göre dağıtma",
+        "Kanalları ayarlarıyla kopyalama",
+        "Temsilci Durum Bilgisi",
+        "Farklı kanallara farklı temsilciler atama",
+        "Site Webhookları",
+        "Çalışanların erişim hakları ve rollerini düzenleme"
+      ];
+      
+      const hasPremiumFeature = premiumFeatures.some(feature => state.selected.has(feature));
+      
+      if (hasPremiumFeature) {
+        const selectedPremiumFeatures = premiumFeatures.filter(feature => state.selected.has(feature));
+        packageSuggestion = 'Premium Paket';
+        packageDescription = 'Premium özellikler seçildiği için Premium Paket gerekli';
+        packageReason = `Premium özellikler seçildiği için Premium Paket önerilir: ${selectedPremiumFeatures.join(', ')}`;
+        return { packageSuggestion, packageDescription, packageReason };
+      }
+      
+      // Check for pro features (third priority)
+      const proFeatures = [
+        "Akıllı tetikleyicilerle hedefli sohbetler başlatma",
+        "Sohbet öncesi butonlar",
+        "Dosya gönderme-alma",
+        "Canlı ziyaretçi takibi ve sitedeki ziyaretçiye manuel mesaj gönderme",
+        "IP adresi, coğrafi bölge ve ziyaret kaynağı dahil tüm ziyaretçi bilgileri",
+        "Sitenizde ziyaretçilerinizi yönlendirmek için işaretçi aracı",
+        "CRM Modülü ile müşteri ve satış takibi",
+        "Excel'e veri dökümü alma",
+        "Müşteriler tarafından servis kalitesi geribildirimleri",
+        "Yazım denetimi",
+        "Taslak cevaplar",
+        "Çoklu temsilcili sohbetler",
+        "Mesai saatleri belirleme",
+        "Gönderim sonrası yanıt düzenleme",
+        "Temsilciler arası sohebt aktarımı",
+        "Yazılımınızla entegrasyon için JavaScript API ve WebHooklar",
+        "CRM sağlayıcılarla tek tıkla entegrasyon",
+        "Spam koruması"
+      ];
+      
+      const hasProFeature = proFeatures.some(feature => state.selected.has(feature));
+      
+      if (hasProFeature) {
+        const selectedProFeatures = proFeatures.filter(feature => state.selected.has(feature));
+        packageSuggestion = 'Pro Paket';
+        packageDescription = 'Pro özellikler seçildiği için Pro Paket gerekli';
+        packageReason = `Pro özellikler seçildiği için Pro Paket önerilir: ${selectedProFeatures.join(', ')}`;
+        return { packageSuggestion, packageDescription, packageReason };
+      }
+      
+      // Check if agent count requires enterprise package (fourth priority)
+      if (temsilciCount === 'limitless') {
+        packageSuggestion = 'Kurumsal Paket';
+        packageDescription = 'Sınırsız temsilci sayısı için kurumsal çözüm gerekli';
+        packageReason = 'Sınırsız temsilci sayısı seçildiği için Kurumsal Paket önerilir';
+      }
+      // Check if agent count requires pro/premium package
+      else if (temsilciCount === 'up-to-100') {
+        if (monthlyMessages === '0-1000') {
+          packageSuggestion = 'Pro Paket';
+          packageDescription = '100 temsilciye kadar destek için Pro Paket gerekli';
+          packageReason = '100 temsilciye kadar destek seçildiği için Pro Paket önerilir';
+        } else if (monthlyMessages === '1000-10000') {
+          packageSuggestion = 'Pro Paket';
+          packageDescription = '100 temsilciye kadar destek ve orta seviye mesaj hacmi için Pro Paket';
+          packageReason = '100 temsilciye kadar destek ve 1K-10K mesaj hacmi için Pro Paket önerilir';
+        } else if (monthlyMessages === '10k-100k') {
+          packageSuggestion = 'Premium Paket';
+          packageDescription = '100 temsilciye kadar destek ve yüksek mesaj hacmi için Premium Paket';
+          packageReason = '100 temsilciye kadar destek ve 10K-100K mesaj hacmi için Premium Paket önerilir';
+        } else if (monthlyMessages === '100k-1m' || monthlyMessages === '1m+') {
+          packageSuggestion = 'Kurumsal Paket';
+          packageDescription = '100 temsilciye kadar destek ve çok yüksek mesaj hacmi için Kurumsal Paket';
+          packageReason = '100 temsilciye kadar destek ve 100K+ mesaj hacmi için Kurumsal Paket önerilir';
+        }
+      }
+      // Check if agent count is limited to 2 (free package)
+      else if (temsilciCount === 'up-to-2') {
+        if (monthlyMessages === '0-1000') {
+          packageSuggestion = 'Ücretsiz Paket';
+          packageDescription = '2 temsilciye kadar ve düşük mesaj hacmi için ideal';
+          packageReason = '2 temsilciye kadar destek ve 0-1K mesaj hacmi için Ücretsiz Paket önerilir';
+        } else if (monthlyMessages === '1000-10000') {
+          packageSuggestion = 'Pro Paket';
+          packageDescription = '2 temsilciye kadar destek ve orta seviye mesaj hacmi için Pro Paket gerekli';
+          packageReason = '2 temsilciye kadar destek ve 1K-10K mesaj hacmi için Pro Paket önerilir';
+        } else if (monthlyMessages === '10k-100k') {
+          packageSuggestion = 'Premium Paket';
+          packageDescription = '2 temsilciye kadar destek ve yüksek mesaj hacmi için Premium Paket gerekli';
+          packageReason = '2 temsilciye kadar destek ve 10K-100K mesaj hacmi için Premium Paket önerilir';
+        } else if (monthlyMessages === '100k-1m' || monthlyMessages === '1m+') {
+          packageSuggestion = 'Kurumsal Paket';
+          packageDescription = '2 temsilciye kadar destek ve çok yüksek mesaj hacmi için Kurumsal Paket gerekli';
+          packageReason = '2 temsilciye kadar destek ve 100K+ mesaj hacmi için Kurumsal Paket önerilir';
+        }
+      }
+      // Fallback for when no agent count is selected
+      else if (!temsilciCount) {
+        packageSuggestion = 'Paket Seçimi Gerekli';
+        packageDescription = 'Lütfen temsilci sayısını seçin';
+        packageReason = 'Temsilci sayısı seçilmedi';
+      }
+      // Fallback for when no monthly messages is selected
+      else if (!monthlyMessages) {
+        packageSuggestion = 'Paket Seçimi Gerekli';
+        packageDescription = 'Lütfen aylık mesaj sayısını seçin';
+        packageReason = 'Aylık mesaj sayısı seçilmedi';
+      }
+      
+      return { packageSuggestion, packageDescription, packageReason };
+    }
+
+    function showPackageSuggestion() {
+      const { packageSuggestion, packageDescription, packageReason } = getPackageSuggestion();
+      
+      // Create or update the package suggestion display
+      let suggestionDiv = document.getElementById('packageSuggestion');
+      if (!suggestionDiv) {
+        suggestionDiv = document.createElement('div');
+        suggestionDiv.id = 'packageSuggestion';
+        suggestionDiv.className = 'card';
+        suggestionDiv.style.marginTop = '16px';
+        suggestionDiv.style.border = '2px solid var(--primary)';
+        suggestionDiv.style.background = 'linear-gradient(180deg, rgba(34,211,238,.08), rgba(17,24,39,.95))';
+        
+        // Insert after the Devam Et button
+        const devamEtButton = document.getElementById('devamEt').closest('.card');
+        devamEtButton.parentNode.insertBefore(suggestionDiv, devamEtButton.nextSibling);
+      }
+      
+      suggestionDiv.innerHTML = `
+        <h3 style="margin:0 0 12px 0; color:var(--primary); font-size:20px;">${packageSuggestion}</h3>
+        <p style="margin:0 0 16px 0; color:var(--text);">${packageDescription}</p>
+        <p style="margin:0 0 16px 0; color:var(--muted); font-size:14px; font-style:italic;">${packageReason}</p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn" onclick="showPackageDetails()">Paket Detayları</button>
+          <button class="btn primary" onclick="contactSales()">Satış Ekibiyle İletişim</button>
+        </div>
+      `;
+      
+      // Scroll to the suggestion
+      suggestionDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function showPackageDetails() {
+      alert('Paket detayları yakında eklenecek...');
+    }
+
+    function contactSales() {
+      alert('Satış ekibiyle iletişim bilgileri yakında eklenecek...');
     }
 
     function makeOption(label){
@@ -350,6 +612,8 @@
         agentCount: state.fields.agentCount || null,
         email: state.fields.email || null,
         notes: state.fields.notes || null,
+        monthlyMessages: state.fields.monthlyMessages || null,
+        temsilciCount: state.fields.temsilciCount || null,
         selectedByGroup: {},
         selectedCount: state.selected.size,
         exportedAt: new Date().toISOString()
@@ -415,6 +679,7 @@
     document.getElementById('expandAll').addEventListener('click', expandAll);
     document.getElementById('collapseAll').addEventListener('click', collapseAll);
     document.getElementById('buildSummary').addEventListener('click', buildSummary);
+    document.getElementById('devamEt').addEventListener('click', showPackageSuggestion);
     document.getElementById('jsonBtn').addEventListener('click', exportJSON);
     document.getElementById('csvBtn').addEventListener('click', exportCSV);
     document.getElementById('copyBtn').addEventListener('click', copySummary);
@@ -423,6 +688,8 @@
     // Init
     hydrate();
     bindCompanyFields();
+    bindMonthlyMessages();
+    bindTemsilciCount();
     renderGroups();
   </script>
 </body>
