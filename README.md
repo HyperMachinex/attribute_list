@@ -1,3 +1,5 @@
+Priority System:
+
 1. Enterprise Features (Highest Priority)
    Mobil Uygulama SDK (Mobile App SDK)
    Sohbet yönlendirme (Chat Routing)
@@ -7,9 +9,7 @@
    100K+ aylık mesaj hacmi (100K+ monthly message volume)
 3. Premium Requirements (Third Priority)
    10K-100K aylık mesaj hacmi (10K-100K monthly message volume)
-4. Pro Requirements (Fourth Priority)
-   1K-10K aylık mesaj hacmi (1K-10K monthly message volume)
-5. Premium Features (Fifth Priority)
+4. Premium Features (Fourth Priority)
    Whatsapp Entegrasyonu (WhatsApp Integration)
    Facebook, Instagram ve Telegram'da Sesli Mesajlar (Voice Messages in Social Media)
    Apple Business Chat
@@ -22,6 +22,8 @@
    Farklı kanallara farklı temsilciler atama (Assign different agents to different channels)
    Site Webhookları (Site Webhooks)
    Çalışanların erişim hakları ve rollerini düzenleme (Manage employee access rights and roles)
+5. Pro Requirements (Fifth Priority)
+   1K-10K aylık mesaj hacmi (1K-10K monthly message volume)
 6. Pro Features (Sixth Priority)
    Akıllı tetikleyicilerle hedefli sohbetler başlatma (Smart trigger-based targeted chats)
    Sohbet öncesi butonlar (Pre-chat buttons)

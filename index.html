@@ -416,15 +416,7 @@
         return { packageSuggestion, packageDescription, packageReason };
       }
       
-      // Check for pro package based on requirements (fourth priority)
-      if (monthlyMessages === '1000-10000') {
-        packageSuggestion = 'Pro Paket';
-        packageDescription = '1K-10K aylık mesaj hacmi için Pro Paket gerekli';
-        packageReason = '1K-10K aylık mesaj hacmi için Pro Paket önerilir';
-        return { packageSuggestion, packageDescription, packageReason };
-      }
-      
-      // Check for premium features (fifth priority)
+      // Check for premium features (fourth priority)
       const premiumFeatures = [
         "Whatsapp Entegrasyonu (Ek olarak ücretlendirilmektedir)",
         "Facebook, Instagram ve Telegram'da Sesli Mesajlar",
@@ -447,6 +439,14 @@
         packageSuggestion = 'Premium Paket';
         packageDescription = 'Premium özellikler seçildiği için Premium Paket gerekli';
         packageReason = `Premium özellikler seçildiği için Premium Paket önerilir: ${selectedPremiumFeatures.join(', ')}`;
+        return { packageSuggestion, packageDescription, packageReason };
+      }
+      
+      // Check for pro package based on requirements (fifth priority)
+      if (monthlyMessages === '1000-10000') {
+        packageSuggestion = 'Pro Paket';
+        packageDescription = '1K-10K aylık mesaj hacmi için Pro Paket gerekli';
+        packageReason = '1K-10K aylık mesaj hacmi için Pro Paket önerilir';
         return { packageSuggestion, packageDescription, packageReason };
       }
       
