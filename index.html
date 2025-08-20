@@ -396,7 +396,35 @@
         return { packageSuggestion, packageDescription, packageReason };
       }
       
-      // Check for premium/enterprise features (second priority)
+      // Check for enterprise package based on requirements (second priority)
+      if (temsilciCount === 'limitless' || monthlyMessages === '100k-1m' || monthlyMessages === '1m+') {
+        const reasons = [];
+        if (temsilciCount === 'limitless') reasons.push('Sınırsız temsilci sayısı');
+        if (monthlyMessages === '100k-1m' || monthlyMessages === '1m+') reasons.push('100K+ aylık mesaj hacmi');
+        
+        packageSuggestion = 'Kurumsal Paket';
+        packageDescription = 'Kurumsal gereksinimler karşılandığı için Kurumsal Paket gerekli';
+        packageReason = `Kurumsal gereksinimler: ${reasons.join(', ')}`;
+        return { packageSuggestion, packageDescription, packageReason };
+      }
+      
+      // Check for premium package based on requirements (third priority)
+      if (monthlyMessages === '10k-100k') {
+        packageSuggestion = 'Premium Paket';
+        packageDescription = '10K-100K aylık mesaj hacmi için Premium Paket gerekli';
+        packageReason = '10K-100K aylık mesaj hacmi için Premium Paket önerilir';
+        return { packageSuggestion, packageDescription, packageReason };
+      }
+      
+      // Check for pro package based on requirements (fourth priority)
+      if (monthlyMessages === '1000-10000') {
+        packageSuggestion = 'Pro Paket';
+        packageDescription = '1K-10K aylık mesaj hacmi için Pro Paket gerekli';
+        packageReason = '1K-10K aylık mesaj hacmi için Pro Paket önerilir';
+        return { packageSuggestion, packageDescription, packageReason };
+      }
+      
+      // Check for premium features (fifth priority)
       const premiumFeatures = [
         "Whatsapp Entegrasyonu (Ek olarak ücretlendirilmektedir)",
         "Facebook, Instagram ve Telegram'da Sesli Mesajlar",
@@ -422,7 +450,7 @@
         return { packageSuggestion, packageDescription, packageReason };
       }
       
-      // Check for pro features (third priority)
+      // Check for pro features (sixth priority)
       const proFeatures = [
         "Akıllı tetikleyicilerle hedefli sohbetler başlatma",
         "Sohbet öncesi butonlar",
@@ -454,60 +482,24 @@
         return { packageSuggestion, packageDescription, packageReason };
       }
       
-      // Check if agent count requires enterprise package (fourth priority)
-      if (temsilciCount === 'limitless') {
-        packageSuggestion = 'Kurumsal Paket';
-        packageDescription = 'Sınırsız temsilci sayısı için kurumsal çözüm gerekli';
-        packageReason = 'Sınırsız temsilci sayısı seçildiği için Kurumsal Paket önerilir';
+      // Check for free package (seventh priority)
+      if (temsilciCount === 'up-to-2' && monthlyMessages === '0-1000') {
+        packageSuggestion = 'Ücretsiz Paket';
+        packageDescription = '2 temsilciye kadar ve düşük mesaj hacmi için ideal';
+        packageReason = '2 temsilciye kadar destek ve 0-1K mesaj hacmi için Ücretsiz Paket önerilir';
+        return { packageSuggestion, packageDescription, packageReason };
       }
-      // Check if agent count requires pro/premium package
-      else if (temsilciCount === 'up-to-100') {
-        if (monthlyMessages === '0-1000') {
-          packageSuggestion = 'Pro Paket';
-          packageDescription = '100 temsilciye kadar destek için Pro Paket gerekli';
-          packageReason = '100 temsilciye kadar destek seçildiği için Pro Paket önerilir';
-        } else if (monthlyMessages === '1000-10000') {
-          packageSuggestion = 'Pro Paket';
-          packageDescription = '100 temsilciye kadar destek ve orta seviye mesaj hacmi için Pro Paket';
-          packageReason = '100 temsilciye kadar destek ve 1K-10K mesaj hacmi için Pro Paket önerilir';
-        } else if (monthlyMessages === '10k-100k') {
-          packageSuggestion = 'Premium Paket';
-          packageDescription = '100 temsilciye kadar destek ve yüksek mesaj hacmi için Premium Paket';
-          packageReason = '100 temsilciye kadar destek ve 10K-100K mesaj hacmi için Premium Paket önerilir';
-        } else if (monthlyMessages === '100k-1m' || monthlyMessages === '1m+') {
-          packageSuggestion = 'Kurumsal Paket';
-          packageDescription = '100 temsilciye kadar destek ve çok yüksek mesaj hacmi için Kurumsal Paket';
-          packageReason = '100 temsilciye kadar destek ve 100K+ mesaj hacmi için Kurumsal Paket önerilir';
-        }
-      }
-      // Check if agent count is limited to 2 (free package)
-      else if (temsilciCount === 'up-to-2') {
-        if (monthlyMessages === '0-1000') {
-          packageSuggestion = 'Ücretsiz Paket';
-          packageDescription = '2 temsilciye kadar ve düşük mesaj hacmi için ideal';
-          packageReason = '2 temsilciye kadar destek ve 0-1K mesaj hacmi için Ücretsiz Paket önerilir';
-        } else if (monthlyMessages === '1000-10000') {
-          packageSuggestion = 'Pro Paket';
-          packageDescription = '2 temsilciye kadar destek ve orta seviye mesaj hacmi için Pro Paket gerekli';
-          packageReason = '2 temsilciye kadar destek ve 1K-10K mesaj hacmi için Pro Paket önerilir';
-        } else if (monthlyMessages === '10k-100k') {
-          packageSuggestion = 'Premium Paket';
-          packageDescription = '2 temsilciye kadar destek ve yüksek mesaj hacmi için Premium Paket gerekli';
-          packageReason = '2 temsilciye kadar destek ve 10K-100K mesaj hacmi için Premium Paket önerilir';
-        } else if (monthlyMessages === '100k-1m' || monthlyMessages === '1m+') {
-          packageSuggestion = 'Kurumsal Paket';
-          packageDescription = '2 temsilciye kadar destek ve çok yüksek mesaj hacmi için Kurumsal Paket gerekli';
-          packageReason = '2 temsilciye kadar destek ve 100K+ mesaj hacmi için Kurumsal Paket önerilir';
-        }
-      }
-      // Fallback for when no agent count is selected
-      else if (!temsilciCount) {
+      
+      // Fallback for when no selections are made
+      if (!temsilciCount && !monthlyMessages) {
+        packageSuggestion = 'Paket Seçimi Gerekli';
+        packageDescription = 'Lütfen temsilci sayısını ve aylık mesaj sayısını seçin';
+        packageReason = 'Temsilci sayısı ve aylık mesaj sayısı seçilmedi';
+      } else if (!temsilciCount) {
         packageSuggestion = 'Paket Seçimi Gerekli';
         packageDescription = 'Lütfen temsilci sayısını seçin';
         packageReason = 'Temsilci sayısı seçilmedi';
-      }
-      // Fallback for when no monthly messages is selected
-      else if (!monthlyMessages) {
+      } else if (!monthlyMessages) {
         packageSuggestion = 'Paket Seçimi Gerekli';
         packageDescription = 'Lütfen aylık mesaj sayısını seçin';
         packageReason = 'Aylık mesaj sayısı seçilmedi';
