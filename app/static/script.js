@@ -469,6 +469,24 @@ function toast(msg){
   setTimeout(()=> t.remove(), 1500);
 }
 
+async function saveSummary(){
+  const payload = buildSummary(); // "Özet Oluştur" ile aynı içerik
+  try {
+    const res = await fetch('/api/summary', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    toast('Özet kaydedildi • ID: ' + (data.id || '—'));
+  } catch (err) {
+    console.error(err);
+    alert('Kaydetme sırasında bir hata oluştu.');
+  }
+}
+
+
 // ---- Form submit → Backend JSON ----
 function bindFormSubmit() {
   const form = document.getElementById('featureForm');
@@ -517,7 +535,10 @@ document.getElementById('clearAll').addEventListener('click', clearAll);
 document.getElementById('expandAll').addEventListener('click', expandAll);
 document.getElementById('collapseAll').addEventListener('click', collapseAll);
 document.getElementById('buildSummary').addEventListener('click', buildSummary);
-document.getElementById('devamEt').addEventListener('click', showPackageSuggestion);
+document.getElementById('devamEt').addEventListener('click', async () => {
+  showPackageSuggestion();     // mevcut davranış dursun
+  await saveSummary();         // özet JSON’unu Mongo’ya kaydet
+});
 document.getElementById('jsonBtn').addEventListener('click', exportJSON);
 document.getElementById('csvBtn').addEventListener('click', exportCSV);
 document.getElementById('copyBtn').addEventListener('click', copySummary);

@@ -1,5 +1,5 @@
 # app/main.py
-from fastapi import FastAPI, Request, APIRouter
+from fastapi import FastAPI, Request, APIRouter, Body
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -26,6 +26,12 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 async def home(request: Request):
     # app/template/index.html dosyasını Jinja ile gönderiyoruz
     return templates.TemplateResponse("index.html", {"request": request})
+
+@app.post("/api/summary")
+async def save_summary(payload: dict = Body(...)):
+    # Aynen gelen JSON'u 'summaries' koleksiyonuna kaydediyoruz
+    res = await db["summaries"].insert_one(payload)
+    return {"id": str(res.inserted_id)}
 
 @app.get("/health", include_in_schema=False)
 async def health():
