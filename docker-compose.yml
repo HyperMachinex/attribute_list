@@ -1,0 +1,25 @@
+services:
+
+  mongodb:
+    image: mongo:6.0
+    container_name: clients_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  fastapi:
+    build:
+      context: .
+    container_name: features_api
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongodb
+    environment:
+      - MONGO_URI=${MONGO_URI}
+volumes:
+  mongo_data:

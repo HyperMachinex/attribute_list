@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Canlı Destek İhtiyaç Formu</title>
+  <link rel="stylesheet" href="../static/style.css" />
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="title">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Canlı Destek İhtiyaç Formu</h1>
+          <div class="muted">Benzer özellikleri başlıklar altında topla, form olarak doldur.</div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="search" role="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="10" r="6" stroke="currentColor" stroke-width="2"/></svg>
+          <input id="q" type="search" placeholder="Formda özellik ara... (örn: WhatsApp, CRM, API)" autocomplete="off" />
+        </div>
+        <button class="btn" id="expandAll">Tüm Başlıkları Aç</button>
+        <button class="btn" id="collapseAll">Hepsini Kapat</button>
+        <span class="pill" id="selStat">0 özellik seçildi</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Bilgi Formu (Kullanıcı/Şirket) -->
+    <form id="featureForm" action="/api/needs" method="post" novalidate>
+      <input type="hidden" name="csrf_token" id="csrf_token" value="" />
+
+      <details class="card" open>
+        <summary><strong>Bilgiler</strong> <span class="muted-row">(Şirket ya da bireysel—tek form)</span></summary>
+        <div class="grid cols-2">
+          <div>
+            <label for="company">Şirket İsmi / İsim Soyisim*</label>
+            <input id="company" name="company" type="text" placeholder="Örn: IKnow / Ahmet Yılmaz" required autocomplete="organization" />
+          </div>
+          <div>
+            <label for="website">Web Sitesi</label>
+            <input id="website" name="website" type="url" placeholder="https://..." autocomplete="url" />
+          </div>
+          <div>
+            <label for="industry">Sektör</label>
+            <input id="industry" name="industry" type="text" placeholder="Örn: Enerji, E-Ticaret, SaaS" />
+          </div>
+          <div>
+            <label for="email">E-posta</label>
+            <input id="email" name="email" type="email" placeholder="ornek@firma.com" autocomplete="email" />
+          </div>
+          <div>
+            <label for="phone">Telefon Numarası</label>
+            <input id="phone" name="phone" type="tel" placeholder="+90 5xx xxx xx xx" autocomplete="tel" />
+          </div>
+        </div>
+      </details>
+
+      <div class="card">
+        <label style="margin-bottom:12px; display:block">Aylık Mesaj Sayısı:</label>
+        <div class="grid cols-3" id="monthlyMessages">
+          <label class="option">
+            <input type="radio" name="monthlyMessages" value="0-1000">
+            <span>0-1,000</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="monthlyMessages" value="1000-10000">
+            <span>1,000-10,000</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="monthlyMessages" value="10k-100k">
+            <span>10,000-100,000</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="monthlyMessages" value="100k-1m">
+            <span>100,000-1,000,000</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="monthlyMessages" value="1m+">
+            <span>1,000,000+</span>
+          </label>
+        </div>
+      </div>
+      
+      <div class="card">
+        <label style="margin-bottom:12px; display:block">Temsilci Sayısı:</label>
+        <div class="grid cols-3" id="temsilciCount">
+          <label class="option">
+            <input type="radio" name="temsilciCount" value="up-to-2">
+            <span>2'ye kadar</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="temsilciCount" value="up-to-100">
+            <span>100'e kadar</span>
+          </label>
+          <label class="option">
+            <input type="radio" name="temsilciCount" value="limitless">
+            <span>Sınırsız</span>
+          </label>
+        </div>
+      </div>
+
+      <details class="card" open>
+        <summary><strong>Kanallar & Entegrasyonlar</strong> <span class="muted-row">(Facebook, Instagram, WhatsApp, Apple Business Chat...)</span></summary>
+        <fieldset style="margin-top:10px">
+          <legend>Mesaj Kanalları</legend>
+          <!-- JS ile doldurulacak: her checkbox name="features[]" value="slug" -->
+          <div class="grid cols-2" id="grp-kanal"></div>
+        </fieldset>
+        <fieldset style="margin-top:10px">
+          <legend>Mobil & Telefon</legend>
+          <div class="grid cols-2" id="grp-mobil"></div>
+        </fieldset>
+      </details>
+
+      <details class="card" open>
+        <summary><strong>Sohbet Deneyimi</strong> <span class="muted-row">(Pencere, dosya, yazım, çoklu temsilci...)</span></summary>
+        <fieldset style="margin-top:10px">
+          <legend>Sohbet Penceresi</legend>
+          <div class="grid cols-2" id="grp-pencere"></div>
+        </fieldset>
+        <fieldset style="margin-top:10px">
+          <legend>Agent & Mesaj</legend>
+          <div class="grid cols-2" id="grp-agent"></div>
+        </fieldset>
+      </details>
+
+      <details class="card" open>
+        <summary><strong>Ziyaretçi İzleme & Yönlendirme</strong></summary>
+        <div class="grid cols-2" id="grp-ziyaret"></div>
+      </details>
+
+      <details class="card" open>
+        <summary><strong>Chatbot & Yapay Zeka</strong></summary>
+        <div class="grid cols-2" id="grp-ai"></div>
+      </details>
+
+      <details class="card" open>
+        <summary><strong>Pazarlama & Analitik</strong></summary>
+        <div class="grid cols-2" id="grp-marketing"></div>
+      </details>
+
+      <details class="card" open>
+        <summary><strong>Operasyon & Ekip Yönetimi</strong></summary>
+        <div class="grid cols-2" id="grp-operasyon"></div>
+      </details>
+
+      <details class="card" open>
+        <summary><strong>CRM & Sipariş</strong></summary>
+        <div class="grid cols-2" id="grp-crm"></div>
+      </details>
+
+      <details class="card" open>
+        <summary><strong>Geliştirici & API</strong></summary>
+        <div class="grid cols-2" id="grp-dev"></div>
+      </details>
+
+      <details class="card" open>
+        <summary><strong>Güvenlik & Uyum</strong></summary>
+        <div class="grid cols-2" id="grp-security"></div>
+      </details>
+            
+      <div class="card" style="text-align:center">
+        <button type="button" class="btn primary" id="devamEt" style="padding:16px 24px; font-size:18px; font-weight:600;">Devam Et</button>
+      </div>
+
+      <div class="card" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between">
+        <div class="muted">Arama: <span class="pill" id="filterStat">tüm özellikler</span></div>
+        <div style="display:flex; gap:10px">
+          <button type="button" class="btn" id="selectAll">Görünenleri Seç</button>
+          <button type="button" class="btn" id="clearAll">Seçimi Temizle</button>
+          <button type="button" class="btn primary" id="buildSummary">Özet Oluştur</button>
+        </div>
+      </div>
+
+      <!-- Sunucuya gönderim için ayrı submit -->
+      <div class="card" style="text-align:center">
+        <button type="submit" class="btn primary" style="padding:16px 24px; font-size:18px; font-weight:600;">Gönder</button>
+      </div>
+    </form>
+
+    <section class="summary" id="summary" style="display:none">
+      <h3>Teklif Özeti</h3>
+      <pre id="summaryText"></pre>
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <button id="copyBtn" class="btn">Özeti Kopyala</button>
+        <button id="jsonBtn" class="btn">JSON indir</button>
+        <button id="csvBtn" class="btn">CSV indir</button>
+        <button id="shareBtn" class="btn">Paylaşılabilir Bağlantı</button>
+      </div>
+    </section>
+
+    <p class="footer">Hazırlayan: <strong>Hyper Machine</strong> • <span class="muted">Form yanıtları cihazında saklanır (localStorage). Tamamen istemci tarafıdır.</span></p>
+  </main>
+
+  <script src="../static/script.js"></script>
+</body>
+</html>
