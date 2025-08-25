@@ -536,8 +536,8 @@ document.getElementById('expandAll').addEventListener('click', expandAll);
 document.getElementById('collapseAll').addEventListener('click', collapseAll);
 document.getElementById('buildSummary').addEventListener('click', buildSummary);
 document.getElementById('devamEt').addEventListener('click', async () => {
-  showPackageSuggestion();     // mevcut davranış dursun
-  await saveSummary();         // özet JSON’unu Mongo’ya kaydet
+  showPackageSuggestion();    
+  await saveSummary();         
 });
 document.getElementById('jsonBtn').addEventListener('click', exportJSON);
 document.getElementById('csvBtn').addEventListener('click', exportCSV);
